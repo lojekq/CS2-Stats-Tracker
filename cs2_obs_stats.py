@@ -75,7 +75,7 @@ with app.app_context():
     db.create_all()
 
 # Имя игрока
-PLAYER_NAME = "minti"
+PLAYER_NAME = "YOUR_NICK_STEAM"
 
 @app.route('/', methods=['POST'])
 def receive_game_state():
