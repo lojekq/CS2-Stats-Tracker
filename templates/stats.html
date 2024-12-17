@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>CS2 Stats</title>
+    <style>
+        body {
+            background-color: rgba(0, 0, 0, 0); /* Прозрачный фон */
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            text-align: left;
+        }
+        .stats-container {
+            background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон для читаемости */
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .stat {
+            margin: 15px 0;
+            font-size: 28px;
+        }
+        .stat strong {
+            color: #FFD700; /* Золотой цвет для заголовков */
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="overall-stats" class="stats-container">
+        <!-- <div class="stat"><strong>Общая:</strong></div> -->
+        <div class="stat"><strong>Убийства:</strong> <span id="kills">0</span></div>
+        <div class="stat"><strong>Смерти:</strong> <span id="deaths">0</span></div>
+        <div class="stat"><strong>Победы:</strong> <span id="wins">0</span></div>
+        <div class="stat"><strong>Поражения:</strong> <span id="losses">0</span></div>
+        <div class="stat"><strong>MVPs:</strong> <span id="mvps">0</span></div>
+        <!-- <div class="stat"><strong>Ассисты:</strong> <span id="assists">0</span></div>
+        <div class="stat"><strong>Очки:</strong> <span id="score">0</span></div> -->
+    </div>
+
+    <div id="match-stats" class="stats-container hidden">
+        <!-- <div class="stat"><strong>Текущая статистика матча:</strong></div> -->
+        <div class="stat"><strong>Убийства:</strong> <span id="match_kills">0</span></div>
+        <div class="stat"><strong>Смерти:</strong> <span id="match_deaths">0</span></div>
+        <div class="stat"><strong>MVPs:</strong> <span id="match_mvps">0</span></div>
+        <!-- <div class="stat"><strong>Ассисты:</strong> <span id="match_assists">0</span></div>
+        <div class="stat"><strong>Очки:</strong> <span id="match_score">0</span></div> -->
+        <div class="stat"><strong>Победы:</strong> <span id="wins_match">0</span></div>
+        <div class="stat"><strong>Поражения:</strong> <span id="losses_match">0</span></div>
+    </div>
+
+    <script>
+        async function fetchStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+    
+                const overallStats = document.getElementById('overall-stats');
+                const matchStats = document.getElementById('match-stats');
+    
+                if (data.activity === "playing") {
+                    // Показываем временную статистику
+                    matchStats.classList.remove('hidden');
+                    overallStats.classList.add('hidden');
+    
+                    // Статистика текущего матча
+                    document.getElementById('match_kills').innerText = data.match_kills;
+                    document.getElementById('match_deaths').innerText = data.match_deaths;
+                    document.getElementById('match_mvps').innerText = data.match_mvps;
+                    document.getElementById('wins_match').innerText = data.wins_match;
+                    document.getElementById('losses_match').innerText = data.losses_match;
+                } else if (data.activity === "menu") {
+                    // Показываем общую статистику
+                    overallStats.classList.remove('hidden');
+                    matchStats.classList.add('hidden');
+    
+                    // Общая статистика
+                    document.getElementById('kills').innerText = data.kills;
+                    document.getElementById('deaths').innerText = data.deaths;
+                    document.getElementById('wins').innerText = data.wins;
+                    document.getElementById('losses').innerText = data.losses;
+                    document.getElementById('mvps').innerText = data.mvps;
+                } else {
+                    console.warn('Неизвестное состояние activity:', data.activity);
+                }
+            } catch (error) {
+                console.error('Ошибка при обновлении статистики:', error);
+            }
+        }
+    
+        // Обновление данных каждые 2 секунды
+        setInterval(fetchStats, 2000);
+        fetchStats();
+    </script>
+    
+</body>
+</html>
